@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kerem Esenkaya - CV & Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Vue.js CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <!-- Left Sidebar -->
+            <aside class="sidebar">
+                <div class="profile-section">
+                    <div class="profile-picture">
+                        <img v-if="cvData.personal.photo" :src="cvData.personal.photo" :alt="cvData.personal.name" />
+                        <i v-else class="fas fa-user"></i>
+                    </div>
+                    <h1 class="name">{{ cvData.personal.name }}</h1>
+                    <p v-if="cvData.profile.tagline" class="tagline">{{ cvData.profile.tagline }}</p>
+                </div>
+
+                <section class="contact-section">
+                    <h2 class="section-title">CONTACT</h2>
+                    <div class="divider"></div>
+                    <div class="contact-info">
+                        <div class="contact-item" @click="copyToClipboard(cvData.personal.address)">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ cvData.personal.address }}</span>
+                        </div>
+                        <div class="contact-item" @click="copyToClipboard(cvData.personal.phone)">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ cvData.personal.phone }}</span>
+                        </div>
+                        <div class="contact-item" @click="copyToClipboard(cvData.personal.email)">
+                            <i class="fas fa-envelope"></i>
+                            <span>{{ cvData.personal.email }}</span>
+                        </div>
+                        <div v-if="cvData.personal.schoolEmail" class="contact-item" @click="copyToClipboard(cvData.personal.schoolEmail)">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>{{ cvData.personal.schoolEmail }}</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>{{ cvData.personal.birthdate }}</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="languages-section">
+                    <h2 class="section-title">TALEN</h2>
+                    <div class="divider"></div>
+                    <div class="language-item" v-for="language in cvData.languages" :key="language.name">
+                        <div class="language-header">
+                            <span class="language-name">{{ language.name }}</span>
+                            <span class="language-level">{{ language.level }}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" :style="{ width: language.progress + '%' }"></div>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="hero-photo">
+                    <img v-if="cvData.personal.photo" :src="cvData.personal.photo" :alt="cvData.personal.name" />
+                </div>
+                <div class="hero-content">
+                    <p v-if="cvData.profile.tagline" class="hero-tagline">{{ cvData.profile.tagline }}</p>
+                    <h1 v-if="cvData.profile.title" class="hero-title">{{ cvData.profile.title }}</h1>
+                    <p v-if="cvData.profile.subtitle" class="hero-subtitle">{{ cvData.profile.subtitle }}</p>
+                </div>
+            </section>
+
+            <section class="profile-section-main">
+                <h2 class="section-title-main">
+                    <i class="fas fa-user-circle"></i>
+                    PROFIEL
+                </h2>
+                <div class="section-content">
+                    <p v-for="(paragraph, index) in cvData.profile.description" :key="index">{{ paragraph }}</p>
+                </div>
+            </section>
+
+                <section class="education-section">
+                    <h2 class="section-title-main">
+                        <i class="fas fa-graduation-cap"></i>
+                        OPLEIDING
+                    </h2>
+                    <div class="section-content">
+                        <div class="education-item" v-for="edu in cvData.education" :key="edu.title">
+                            <h3>{{ edu.title }}</h3>
+                            <p class="institution">{{ edu.institution }}</p>
+                            <p v-if="edu.period" class="period">{{ edu.period }}</p>
+                            <ul class="achievements">
+                                <li v-for="achievement in edu.achievements" :key="achievement">{{ achievement }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="technical-skills-section">
+                    <h2 class="section-title-main">
+                        <i class="fas fa-code"></i>
+                        TECHNISCHE VAARDIGHEDEN
+                    </h2>
+                    <div class="section-content">
+                        <h3 class="subsection-title">
+                            <i class="fas fa-desktop"></i>
+                            Programmeertalen & Frameworks
+                        </h3>
+                        <div class="skills-grid">
+                            <div class="skill-item" v-for="skill in cvData.technicalSkills" :key="skill.name">
+                                <div class="skill-header">
+                                    <span class="skill-name">{{ skill.name }}</span>
+                                    <span class="skill-rating">{{ skill.rating }}/10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" :style="{ width: skill.progress + '%' }"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="soft-skills-section">
+                    <h2 class="section-title-main">
+                        <i class="fas fa-users"></i>
+                        SOFT SKILLS
+                    </h2>
+                    <div class="section-content">
+                        <ul class="soft-skills-list">
+                            <li v-for="skill in cvData.softSkills" :key="skill">{{ skill }}</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section v-if="cvData.workExperience && cvData.workExperience.length > 0" class="work-experience-section">
+                    <h2 class="section-title-main">
+                        <i class="fas fa-briefcase"></i>
+                        WERKERVARING
+                    </h2>
+                    <div class="section-content">
+                        <div class="work-item" v-for="work in cvData.workExperience" :key="work.company">
+                            <div class="work-header">
+                                <h3>{{ work.company }}</h3>
+                                <span class="work-period">{{ work.period }}</span>
+                            </div>
+                            <ul class="work-responsibilities">
+                                <li v-for="responsibility in work.responsibilities" :key="responsibility">{{ responsibility }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="internship-section">
+                    <h2 class="section-title-main">
+                        <i class="fas fa-handshake"></i>
+                        STAGE
+                    </h2>
+                    <div class="section-content">
+                        <p>{{ cvData.internship.description }}</p>
+                        <p v-if="cvData.internship.location" class="internship-location">
+                            <i class="fas fa-map-marker-alt"></i> {{ cvData.internship.location }}
+                        </p>
+                    </div>
+                </section>
+                
+                <section v-if="cvData.about" class="about-section">
+                    <h2 class="section-title-main">
+                        <i class="fas fa-star"></i>
+                        WAAR IK STERK IN BEN
+                    </h2>
+                    <div class="section-content">
+                        <p v-if="cvData.about.description" class="about-description">{{ cvData.about.description }}</p>
+                        <div v-if="cvData.about.strengths" class="strengths-grid">
+                            <div class="strength-card" v-for="strength in cvData.about.strengths" :key="strength.title">
+                                <small>{{ strength.category }}</small>
+                                <h3>{{ strength.title }}</h3>
+                                <p>{{ strength.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <!-- Loading indicator -->
+        <div v-if="loading" class="loading-overlay">
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
